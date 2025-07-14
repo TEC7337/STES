@@ -1,0 +1,12 @@
+[server]
+port = 8501
+address = "localhost"
+headless = true
+enableCORS = false
+enableXsrfProtection = false
+
+[browser]
+gatherUsageStats = false
+
+[global]
+developmentMode = false 

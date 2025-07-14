@@ -1,0 +1,29 @@
+# Smart Time Entry System (STES) Requirements - Basic Installation
+# Core dependencies for computer vision (mock implementation for demo)
+opencv-python>=4.8.0
+# Note: face-recognition and dlib require CMake on Windows
+# For demo purposes, we'll use mock implementations
+
+# Database and data processing
+pandas>=2.0.0
+sqlalchemy>=2.0.0
+# sqlite3 is built-in with Python
+
+# Web framework and UI
+streamlit>=1.28.0
+
+# Utility libraries
+numpy>=1.24.0
+pillow>=10.0.0
+python-dateutil>=2.8.0
+
+# Development and testing
+python-dotenv>=1.0.0
+
+# Optional dependencies (uncomment if needed)
+# face-recognition>=1.3.0  # Requires CMake
+# dlib>=19.24.0           # Requires CMake
+# psycopg2-binary>=2.9.0  # For PostgreSQL
+# flask>=3.0.0            # For Flask alternative
+# pytest>=7.4.0           # For testing
+# tableauserverclient>=0.25 # For Tableau integration 
