@@ -276,14 +276,8 @@ def display_main_interface():
     # Display video feed
     display_video_feed()
 
-def display_video_feed():
-    """Display the video feed with real face recognition"""
-    st.subheader("📹 Live Video Feed")
-    camera_index = st.selectbox("Select Camera", [0, 1, 2], help="Try different camera indices if one doesn't work")
-    video_placeholder = st.empty()
-    status_placeholder = st.empty()
-
-    # --- Display TODAY'S time log for Arnav Mehta ---
+def get_todays_log_data():
+    """Get today's time log data for Arnav Mehta"""
     try:
         db_manager = get_database_manager()
         with db_manager.get_session() as session:
@@ -291,7 +285,6 @@ def display_video_feed():
             from sqlalchemy import func
             
             arnav = session.query(Employee).filter_by(name='Arnav Mehta').first()
-            today_log_data = None
             if arnav:
                 # Get TODAY'S time log only
                 today = datetime.now().date()
@@ -302,7 +295,7 @@ def display_video_feed():
                 
                 if today_log:
                     # Extract data while still in session
-                    today_log_data = {
+                    return {
                         'clock_in': today_log.clock_in,
                         'clock_out': today_log.clock_out,
                         'duration_hours': today_log.duration_hours,
@@ -310,13 +303,24 @@ def display_video_feed():
                     }
     except Exception as e:
         st.error(f"❌ Database connection error: {str(e)}")
-        today_log_data = None
+    return None
+
+def display_time_log_status():
+    """Display the current time log status"""
+    # Get fresh data from database
+    today_log_data = get_todays_log_data()
     
     # Add current Pacific Time for reference
     from datetime import timezone, timedelta
-    pacific_tz = timezone(timedelta(hours=-8))  # PST (Pacific Standard Time)
+    # Pacific Standard Time (PST) is UTC-8, but Pacific Daylight Time (PDT) is UTC-7
+    # Check if we're in daylight saving time
+    import time
+    is_dst = time.daylight and time.localtime().tm_isdst
+    pacific_offset = -7 if is_dst else -8
+    pacific_tz = timezone(timedelta(hours=pacific_offset))
     current_time_pacific = datetime.now(pacific_tz)
-    current_time_str = current_time_pacific.strftime('%Y-%m-%d %H:%M:%S PST')
+    tz_name = "PDT" if is_dst else "PST"
+    current_time_str = current_time_pacific.strftime(f'%Y-%m-%d %H:%M:%S {tz_name}')
     
     if today_log_data:
         clock_in_str = today_log_data['clock_in'].strftime('%Y-%m-%d %H:%M:%S') if today_log_data['clock_in'] else 'N/A'
@@ -325,8 +329,8 @@ def display_video_feed():
         status_str = today_log_data['status'].title()
         
         st.info(f"**TODAY'S Log for Arnav Mehta:**  \n"
-                f"Clock-in: {clock_in_str} PST  \n"
-                f"Clock-out: {clock_out_str} PST  \n" 
+                f"Clock-in: {clock_in_str} {tz_name}  \n"
+                f"Clock-out: {clock_out_str} {tz_name}  \n" 
                 f"Duration: {duration_str} hours  \n"
                 f"Status: {status_str}  \n"
                 f"Current Time: {current_time_str}")
@@ -334,6 +338,24 @@ def display_video_feed():
         st.info(f"**TODAY'S Log for Arnav Mehta:**  \n"
                 f"No clock-in record found for today  \n"
                 f"Current Time: {current_time_str}")
+
+def display_video_feed():
+    """Display the video feed with real face recognition"""
+    st.subheader("📹 Live Video Feed")
+    camera_index = st.selectbox("Select Camera", [0, 1, 2], help="Try different camera indices if one doesn't work")
+    video_placeholder = st.empty()
+    status_placeholder = st.empty()
+
+    # Display time log status (will be updated dynamically)
+    time_log_placeholder = st.empty()
+    with time_log_placeholder.container():
+        display_time_log_status()
+        
+    # Check if time log was updated and clear the flag
+    if st.session_state.get('time_log_updated', False):
+        st.session_state.time_log_updated = False
+        with time_log_placeholder.container():
+            display_time_log_status()
 
     # Initialize session state
     if 'camera' not in st.session_state:
@@ -456,8 +478,8 @@ def display_video_feed():
                     # Check if we've already completed 2 actions in this session
                     if st.session_state.actions_completed:
                         status_placeholder.info("✅ Session complete. Both clock-in and clock-out have been processed.")
-                    # Only process if it's been more than 10 seconds since last recognition
-                    elif current_time - st.session_state.last_recognition_time > 10:
+                    # Only process if it's been more than 5 seconds since last recognition (prevent immediate clock-out)
+                    elif current_time - st.session_state.last_recognition_time > 5:
                         try:
                             from utils.time_entry_manager import TimeEntryManager
                             time_manager = TimeEntryManager()
@@ -492,6 +514,9 @@ def display_video_feed():
                                         'message': result['message']
                                     })
                                     
+                                    # Set flag to trigger display update
+                                    st.session_state.time_log_updated = True
+                                    
                                     # Force refresh of the page to show updated time log
                                     st.rerun()
                                 else:
@@ -504,7 +529,7 @@ def display_video_feed():
                         except Exception as e:
                             status_placeholder.error(f"❌ Error processing time entry: {str(e)}")
                     else:
-                        remaining_time = 10 - (current_time - st.session_state.last_recognition_time)
+                        remaining_time = 5 - (current_time - st.session_state.last_recognition_time)
                         status_placeholder.info(f"✅ Arnav Mehta recognized (cooldown: {remaining_time:.1f}s)")
                 else:
                     if len(face_locations) == 0:
@@ -531,6 +556,9 @@ def display_video_feed():
         col1, col2 = st.columns(2)
         with col1:
             if st.button("🔄 Refresh Feed"):
+                # Clear the cooldown timer so you can clock-out immediately
+                st.session_state.last_recognition_time = 0
+                st.success("✅ Feed refreshed! You can now clock-out by showing your face.")
                 st.rerun()
         with col2:
             if st.button("🔄 Reset Session"):
@@ -740,6 +768,11 @@ def main():
 def display_system_logs():
     """Display system logs page"""
     st.header("📝 System Logs")
+    
+    # Display time log status using the same function as home page
+    display_time_log_status()
+    
+    # --- System Logs Section ---
     try:
         db_manager = get_database_manager()
         with db_manager.get_session() as session:

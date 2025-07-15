@@ -226,6 +226,37 @@ class DatabaseManager:
                 }
             return None
     
+    def update_time_log_checkin(self, time_log_id, clock_in_time):
+        """
+        Update time log with clock-in time
+        
+        Args:
+            time_log_id (int): Time log ID
+            clock_in_time (datetime): Clock-in time
+            
+        Returns:
+            dict: Updated time log dictionary or None
+        """
+        with self.get_session() as session:
+            time_log = session.query(TimeLog).get(time_log_id)
+            if time_log:
+                time_log.clock_in = clock_in_time
+                time_log.update_status()
+                logger.info(f"✅ Time log updated with clock-in: {time_log_id}")
+                
+                # Return as dictionary to avoid session binding issues
+                return {
+                    'id': time_log.id,
+                    'employee_id': time_log.employee_id,
+                    'clock_in': time_log.clock_in,
+                    'clock_out': time_log.clock_out,
+                    'date': time_log.date,
+                    'duration_hours': time_log.duration_hours,
+                    'status': time_log.status,
+                    'created_at': time_log.created_at
+                }
+            return None
+
     def update_time_log_checkout(self, time_log_id, clock_out_time):
         """
         Update time log with clock-out time

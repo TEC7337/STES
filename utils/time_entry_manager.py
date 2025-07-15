@@ -121,6 +121,16 @@ class TimeEntryManager:
                     'time_log': None
                 }
             
+            # Check if this is a ready record (no clock_in yet)
+            if not time_log['clock_in'] and time_log['status'] == 'ready':
+                return {
+                    'exists': True,
+                    'employee_id': employee['id'],
+                    'status': 'not_clocked_in',
+                    'message': f'{employee_name} has not clocked in today',
+                    'time_log': time_log
+                }
+            
             if time_log['clock_in'] and not time_log['clock_out']:
                 return {
                     'exists': True,
@@ -182,13 +192,20 @@ class TimeEntryManager:
                     'message': f'{employee_name} is already clocked in'
                 }
             
-            # Create new time log with clock-in
+            # Update existing time log with clock-in or create new one
             now = datetime.now()
-            time_log_id = self.db_manager.create_time_log(
-                employee_id=employee_status['employee_id'],
-                clock_in=now,
-                date=now.date()
-            )
+            
+            if employee_status.get('time_log') and employee_status['time_log']['status'] == 'ready':
+                # Update existing ready record
+                time_log_id = employee_status['time_log']['id']
+                self.db_manager.update_time_log_checkin(time_log_id, now)
+            else:
+                # Create new time log
+                time_log_id = self.db_manager.create_time_log(
+                    employee_id=employee_status['employee_id'],
+                    clock_in=now,
+                    date=now.date()
+                )
             
             # Log system event
             self.db_manager.log_system_event(
@@ -319,9 +336,6 @@ class TimeEntryManager:
                 logger.info(f"⏰ Cooldown active for {name}, skipping recognition")
                 continue
             
-            # Update recent recognition
-            self.update_recent_recognition(name)
-            
             # Get employee status and decide action
             employee_status = self.get_employee_status(name)
             
@@ -341,11 +355,19 @@ class TimeEntryManager:
                 result['employee_name'] = name
                 results.append(result)
                 
+                # Update recent recognition only on success
+                if result['success']:
+                    self.update_recent_recognition(name)
+                
             elif employee_status['status'] == 'clocked_in':
                 # Clock out
                 result = self.process_clock_out(name)
                 result['employee_name'] = name
                 results.append(result)
+                
+                # Update recent recognition only on success
+                if result['success']:
+                    self.update_recent_recognition(name)
                 
             else:
                 # Already clocked out or other status
