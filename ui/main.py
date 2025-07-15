@@ -283,26 +283,57 @@ def display_video_feed():
     video_placeholder = st.empty()
     status_placeholder = st.empty()
 
-    # --- Persistent status box for latest clock-in/out ---
-    db_manager = get_database_manager()
-    with db_manager.get_session() as session:
-        from models.database import Employee, TimeLog
-        arnav = session.query(Employee).filter_by(name='Arnav Mehta').first()
-        latest_log = None
-        if arnav:
-            latest_log = session.query(TimeLog).filter_by(employee_id=arnav.id).order_by(TimeLog.date.desc(), TimeLog.clock_in.desc()).first()
-    if latest_log:
-        clock_in_str = latest_log.clock_in.strftime('%Y-%m-%d %H:%M:%S') if latest_log.clock_in else 'N/A'
-        clock_out_str = latest_log.clock_out.strftime('%Y-%m-%d %H:%M:%S') if latest_log.clock_out else 'N/A'
-        duration_str = latest_log.duration_hours if latest_log.duration_hours else 'N/A'
-        status_str = latest_log.status.title()
-        st.info(f"**Latest for Arnav Mehta:**  \
-        Clock-in: {clock_in_str}  \
-        Clock-out: {clock_out_str}  \
-        Duration: {duration_str} hours  \
-        Status: {status_str}")
+    # --- Display TODAY'S time log for Arnav Mehta ---
+    try:
+        db_manager = get_database_manager()
+        with db_manager.get_session() as session:
+            from models.database import Employee, TimeLog
+            from sqlalchemy import func
+            
+            arnav = session.query(Employee).filter_by(name='Arnav Mehta').first()
+            today_log_data = None
+            if arnav:
+                # Get TODAY'S time log only
+                today = datetime.now().date()
+                today_log = session.query(TimeLog).filter(
+                    TimeLog.employee_id == arnav.id,
+                    func.date(TimeLog.date) == today
+                ).order_by(TimeLog.created_at.desc()).first()
+                
+                if today_log:
+                    # Extract data while still in session
+                    today_log_data = {
+                        'clock_in': today_log.clock_in,
+                        'clock_out': today_log.clock_out,
+                        'duration_hours': today_log.duration_hours,
+                        'status': today_log.status
+                    }
+    except Exception as e:
+        st.error(f"❌ Database connection error: {str(e)}")
+        today_log_data = None
+    
+    # Add current Pacific Time for reference
+    from datetime import timezone, timedelta
+    pacific_tz = timezone(timedelta(hours=-8))  # PST (Pacific Standard Time)
+    current_time_pacific = datetime.now(pacific_tz)
+    current_time_str = current_time_pacific.strftime('%Y-%m-%d %H:%M:%S PST')
+    
+    if today_log_data:
+        clock_in_str = today_log_data['clock_in'].strftime('%Y-%m-%d %H:%M:%S') if today_log_data['clock_in'] else 'N/A'
+        clock_out_str = today_log_data['clock_out'].strftime('%Y-%m-%d %H:%M:%S') if today_log_data['clock_out'] else 'N/A'
+        duration_str = today_log_data['duration_hours'] if today_log_data['duration_hours'] else 'N/A'
+        status_str = today_log_data['status'].title()
+        
+        st.info(f"**TODAY'S Log for Arnav Mehta:**  \n"
+                f"Clock-in: {clock_in_str} PST  \n"
+                f"Clock-out: {clock_out_str} PST  \n" 
+                f"Duration: {duration_str} hours  \n"
+                f"Status: {status_str}  \n"
+                f"Current Time: {current_time_str}")
     else:
-        st.info("No time log found for Arnav Mehta.")
+        st.info(f"**TODAY'S Log for Arnav Mehta:**  \n"
+                f"No clock-in record found for today  \n"
+                f"Current Time: {current_time_str}")
 
     # Initialize session state
     if 'camera' not in st.session_state:
@@ -323,7 +354,6 @@ def display_video_feed():
     # Load known faces (only once)
     if not st.session_state.known_face_encodings:
         try:
-            from db.connection import get_database_manager
             db_manager = get_database_manager()
             with db_manager.get_session() as session:
                 from models.database import Employee
@@ -461,6 +491,9 @@ def display_video_feed():
                                         'action': result['action'],
                                         'message': result['message']
                                     })
+                                    
+                                    # Force refresh of the page to show updated time log
+                                    st.rerun()
                                 else:
                                     status_placeholder.warning(f"⚠️ {result['message']}")
                             else:
@@ -511,6 +544,40 @@ def display_video_feed():
                     del st.session_state.known_face_names
                 st.success("✅ Session reset! You can now clock-in and clock-out again.")
                 st.rerun()
+    
+    # Add a button to clear today's old data
+    if st.button("🗑️ Clear Today's Old Data"):
+        try:
+            db_manager = get_database_manager()
+            with db_manager.get_session() as session:
+                from models.database import Employee, TimeLog
+                from sqlalchemy import func
+                
+                arnav = session.query(Employee).filter_by(name='Arnav Mehta').first()
+                if arnav:
+                    # Delete today's time logs
+                    today = datetime.now().date()
+                    deleted_count = session.query(TimeLog).filter(
+                        TimeLog.employee_id == arnav.id,
+                        func.date(TimeLog.date) == today
+                    ).delete()
+                    session.commit()
+                    
+                    if deleted_count > 0:
+                        st.success(f"✅ Cleared {deleted_count} old time log(s) for today")
+                    else:
+                        st.info("ℹ️ No time logs found for today")
+                else:
+                    st.error("❌ Arnav Mehta not found in database")
+            
+            # Reset session state
+            st.session_state.session_actions_count = 0
+            st.session_state.actions_completed = False
+            st.session_state.last_recognition_time = 0
+            st.rerun()
+            
+        except Exception as e:
+            st.error(f"❌ Error clearing data: {str(e)}")
 
 def display_sidebar():
     """Display the sidebar with system information"""
