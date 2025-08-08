@@ -1,6 +1,6 @@
 # 🚀 Getting Started with STES
 
-Welcome to the Smart Time Entry System (STES)! This guide will help you set up and run the system for your Nsight Inc. presentation.
+Welcome to the Smart Time Entry System (STES)!
 
 ## 📋 Prerequisites
 
@@ -53,6 +53,60 @@ python utils/create_sample_data.py
 streamlit run ui/main.py
 ```
 
+## Setting up Power BI Dashboards with CSV Files (Single Location)
+-Create a Power BI Dashboard (depending on how you want the visualizations)
+-Import data -> CSV file
+-Import all_locations_employees_fixed.csv, all_locations_system_logs_fixed.csv, all_locations_time_logs_fixed.csv
+-Should be good to go, just hit refresh whenever an update is needed on the dashboard
+
+## Setting up Power BI Dashboards with SQL Server (Multi-Locational if built upon)
+### **Step 1: Install Prerequisites**
+```bash
+# Install SQL Server (Express, Standard, or Enterprise)
+# Install ODBC Driver 17 for SQL Server
+# Install Python dependency
+pip install pyodbc>=4.0.39
+```
+
+### **Step 2: Configure SQL Server**
+```sql
+-- Create database
+CREATE DATABASE STES_Database;
+GO
+
+-- Create user and permissions
+CREATE LOGIN STES_User WITH PASSWORD = 'YourSecurePassword123!';
+CREATE USER STES_User FOR LOGIN STES_User;
+GRANT SELECT, INSERT, UPDATE, DELETE ON SCHEMA::dbo TO STES_User;
+GRANT CREATE TABLE TO STES_User;
+```
+
+### **Step 3: Update Configuration**
+Edit `sql_server_config.json`:
+```json
+{
+  "server": "your-sql-server-address",
+  "database": "STES_Database",
+  "username": "STES_User",
+  "password": "YourSecurePassword123!",
+  "driver": "{ODBC Driver 17 for SQL Server}",
+  "stes_location_id": 1,
+  "stes_location_name": "Main Office",
+  "sync_interval": 10,
+  "auto_create_tables": true
+}
+```
+
+### **Step 4: Test Integration**
+```bash
+python test_sql_server_integration.py
+```
+
+### **Step 5: Start Integration**
+```bash
+python sql_server_integration.py
+```
+
 ## 👥 Adding Real Employees
 
 To register real employees (instead of using mock data):
@@ -61,14 +115,25 @@ To register real employees (instead of using mock data):
 python utils/register_employee.py --interactive
 ```
 
+The interactive mode will prompt you for:
+- Employee name
+- Email (optional)
+- Department (optional)
+- **Location selection** (1=Main Office, 2=Branch Office, 3=West Coast Office)
+
 Or register from command line:
 ```bash
 # Using camera
-python utils/register_employee.py --name "John Doe" --email "john@nsight.com" --department "Engineering" --camera
+python utils/register_employee.py --name "John Doe" --email "john@nsight.com" --department "Engineering" --location 2 --camera
 
 # Using image file
-python utils/register_employee.py --name "Jane Smith" --image "path/to/photo.jpg" --email "jane@nsight.com"
+python utils/register_employee.py --name "Jane Smith" --image "path/to/photo.jpg" --email "jane@nsight.com" --location 1
 ```
+
+### 📍 Available Locations
+- **Location 1**: Main Office
+- **Location 2**: Branch Office  
+- **Location 3**: West Coast Office
 
 ## 🎯 Using the System
 
@@ -193,6 +258,20 @@ Potential additions for your presentation discussion:
 4. **Analytics**: Attendance patterns and productivity insights
 5. **Security**: Enhanced authentication and audit logging
 
+## 🔄 Power BI Integration
+
+The system automatically updates Power BI export files when:
+- New employees are registered (with chosen location assignment)
+- Sample data is created
+- Database is set up
+
+**Files automatically updated:**
+- `all_locations_employees_fixed.csv`
+- `all_locations_time_logs_fixed.csv`
+- `all_locations_system_logs_fixed.csv`
+
+**Smart Updates**: New employees are automatically detected and added to your chosen location without duplicating existing data. The system intelligently syncs database changes to CSV files, ensuring your Power BI dashboard always reflects the latest information!
+
 ## 🤝 Support
 
 If you encounter any issues:
@@ -203,7 +282,5 @@ If you encounter any issues:
 4. Ensure your camera permissions are enabled
 
 ---
-
-**Good luck with your Nsight presentation! 🎉**
 
 *This system demonstrates practical application of computer vision, database management, and web development skills learned during your internship.* 

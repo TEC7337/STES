@@ -2,6 +2,8 @@
 
 A Python-based automated employee time tracking system using face recognition and computer vision technologies. Built for Nsight Inc. internship demonstration.
 
+Note that this is NOT complete. Currently out of the two ways to connect data into Power BI, only using CSV files on a single desktop works. Getting it to function through SQL server is still incomplete and can be worked on in the future.
+
 ## 🚀 Features
 
 - **Real-time Face Recognition**: Uses webcam to detect and recognize employee faces
@@ -21,7 +23,7 @@ A Python-based automated employee time tracking system using face recognition an
 - **Streamlit**: Web application framework
 - **pandas**: Data analysis and manipulation
 - **PostgreSQL/SQLite**: Database storage
-- **Tableau**: Data visualization (optional)
+- **Power BI**: Data visualization
 
 ## 📁 Project Structure
 
@@ -80,62 +82,6 @@ STES/
 
 3. **Access the web interface:**
    Open your browser and navigate to `http://localhost:8501`
-
-## 🛠️ Troubleshooting
-
-### ModuleNotFoundError: No module named 'face_recognition'
-
-If you see this error, the `face_recognition` library is not installed. Install it and its dependencies with:
-
-```bash
-pip install face_recognition
-```
-
-If you encounter issues installing `face_recognition`, you may need to install `cmake`, `dlib`, and build tools:
-
-- On Windows:
-  ```bash
-  pip install cmake
-  pip install dlib
-  pip install face_recognition
-  ```
-  You may also need to install Visual C++ Build Tools from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
-
-- On Linux:
-  ```bash
-  sudo apt-get install build-essential cmake
-  pip install dlib
-  pip install face_recognition
-  ```
-
-For more help, see the [face_recognition installation guide](https://github.com/ageitgey/face_recognition#installation).
-
-### dlib build fails with "CMake is not installed on your system!"
-
-If you see an error like:
-
-```
-CMake is not installed on your system!
-...
-```
-
-This means the official CMake is not installed or not on your system PATH.  
-**Solution:**
-1. Download and install the official CMake from [cmake.org](https://cmake.org/download/).
-2. During installation, make sure to check the box to **Add CMake to the system PATH**.
-3. After installation, open a new terminal and run:
-   ```bash
-   cmake --version
-   ```
-   If you see the version, CMake is installed correctly.
-
-Now retry:
-```bash
-pip install dlib
-pip install face_recognition
-```
-
-If you still have issues, ensure you have Visual C++ Build Tools installed (see above).
 
 ## ⚙️ Configuration
 

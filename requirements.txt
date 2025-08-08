@@ -26,4 +26,7 @@ python-dotenv>=1.0.0
 # psycopg2-binary>=2.9.0  # For PostgreSQL
 # flask>=3.0.0            # For Flask alternative
 # pytest>=7.4.0           # For testing
-# tableauserverclient>=0.25 # For Tableau integration 
+# tableauserverclient>=0.25 # For Tableau integration
+
+# SQL Server integration
+pyodbc>=4.0.39  # For SQL Server connectivity 

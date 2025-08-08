@@ -1,0 +1,11 @@
+{
+  "server": "Your Server Name",
+  "database": "STES_Database",
+  "username": "STES_User",
+  "password": "Your Password",
+  "driver": "{ODBC Driver 17 for SQL Server}",
+  "stes_location_id": 1,
+  "stes_location_name": "Main Office",
+  "sync_interval": 10,
+  "auto_create_tables": true
+}
