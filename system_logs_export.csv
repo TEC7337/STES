@@ -1,0 +1,52 @@
+id,event_type,employee_id,message,details,timestamp
+1,system_startup,,Database setup completed successfully,"{""config_env"": ""default"", ""database_url"": ""sqlite:///stes.db"", ""timestamp"": ""2025-07-12T14:46:20.182275""}",2025-07-12 21:46:20.192363
+2,system_startup,,Database setup completed successfully,"{""config_env"": ""default"", ""database_url"": ""sqlite:///stes.db"", ""timestamp"": ""2025-07-12T14:46:42.402781""}",2025-07-12 21:46:42.415362
+3,system_startup,,Database setup completed successfully,"{""config_env"": ""default"", ""database_url"": ""sqlite:///stes.db"", ""timestamp"": ""2025-07-12T14:47:16.282076""}",2025-07-12 21:47:16.291974
+4,system_startup,,Database setup completed successfully,"{""config_env"": ""default"", ""database_url"": ""sqlite:///stes.db"", ""timestamp"": ""2025-07-12T14:47:46.657389""}",2025-07-12 21:47:46.667137
+5,system_startup,,Database setup completed successfully,"{""config_env"": ""default"", ""database_url"": ""sqlite:///stes.db"", ""timestamp"": ""2025-07-12T14:48:04.799173""}",2025-07-12 21:48:04.808083
+6,system_startup,,System started successfully,"{""timestamp"": ""2025-07-12T14:48:39.738141"", ""source"": ""sample_data_generator""}",2025-07-12 21:48:39.740012
+7,face_detected,,Face detected in video stream,"{""timestamp"": ""2025-07-12T14:48:39.748967"", ""source"": ""sample_data_generator""}",2025-07-12 21:48:39.749820
+8,employee_registered,,New employee registered,"{""timestamp"": ""2025-07-12T14:48:39.757034"", ""source"": ""sample_data_generator""}",2025-07-12 21:48:39.757552
+9,clock_in,,Employee clocked in,"{""timestamp"": ""2025-07-12T14:48:39.763840"", ""source"": ""sample_data_generator""}",2025-07-12 21:48:39.764293
+10,clock_out,,Employee clocked out,"{""timestamp"": ""2025-07-12T14:48:39.771459"", ""source"": ""sample_data_generator""}",2025-07-12 21:48:39.771991
+11,error,,Camera connection lost,"{""timestamp"": ""2025-07-12T14:48:39.779773"", ""source"": ""sample_data_generator""}",2025-07-12 21:48:39.780411
+12,system_shutdown,,System shutdown initiated,"{""timestamp"": ""2025-07-12T14:48:39.788834"", ""source"": ""sample_data_generator""}",2025-07-12 21:48:39.789628
+13,system_startup,,Database setup completed successfully,"{""config_env"": ""default"", ""database_url"": ""sqlite:///stes.db"", ""timestamp"": ""2025-07-13T13:05:06.383396""}",2025-07-13 20:05:06.388614
+14,system_startup,,Database setup completed successfully,"{""config_env"": ""default"", ""database_url"": ""sqlite:///stes.db"", ""timestamp"": ""2025-07-13T13:05:22.035946""}",2025-07-13 20:05:22.040307
+15,system_startup,,Database setup completed successfully,"{""config_env"": ""default"", ""database_url"": ""sqlite:///stes.db"", ""timestamp"": ""2025-07-13T13:06:11.885048""}",2025-07-13 20:06:11.890444
+16,system_startup,,Database setup completed successfully,"{""config_env"": ""default"", ""database_url"": ""sqlite:///stes.db"", ""timestamp"": ""2025-07-13T13:06:31.336348""}",2025-07-13 20:06:31.341449
+17,system_startup,,System started successfully,"{""timestamp"": ""2025-07-13T13:06:32.226165"", ""source"": ""sample_data_generator""}",2025-07-13 20:06:32.229058
+18,face_detected,,Face detected in video stream,"{""timestamp"": ""2025-07-13T13:06:32.238180"", ""source"": ""sample_data_generator""}",2025-07-13 20:06:32.238693
+19,employee_registered,,New employee registered,"{""timestamp"": ""2025-07-13T13:06:32.245939"", ""source"": ""sample_data_generator""}",2025-07-13 20:06:32.246202
+20,clock_in,,Employee clocked in,"{""timestamp"": ""2025-07-13T13:06:32.250804"", ""source"": ""sample_data_generator""}",2025-07-13 20:06:32.251168
+21,clock_out,,Employee clocked out,"{""timestamp"": ""2025-07-13T13:06:32.255870"", ""source"": ""sample_data_generator""}",2025-07-13 20:06:32.256079
+22,error,,Camera connection lost,"{""timestamp"": ""2025-07-13T13:06:32.262475"", ""source"": ""sample_data_generator""}",2025-07-13 20:06:32.262788
+23,system_shutdown,,System shutdown initiated,"{""timestamp"": ""2025-07-13T13:06:32.267280"", ""source"": ""sample_data_generator""}",2025-07-13 20:06:32.267508
+24,system_startup,,System started successfully,"{""timestamp"": ""2025-07-13T13:09:57.881065"", ""source"": ""sample_data_generator""}",2025-07-13 20:09:57.882787
+25,face_detected,,Face detected in video stream,"{""timestamp"": ""2025-07-13T13:09:57.895817"", ""source"": ""sample_data_generator""}",2025-07-13 20:09:57.896605
+26,employee_registered,,New employee registered,"{""timestamp"": ""2025-07-13T13:09:57.905784"", ""source"": ""sample_data_generator""}",2025-07-13 20:09:57.906437
+27,clock_in,,Employee clocked in,"{""timestamp"": ""2025-07-13T13:09:57.914343"", ""source"": ""sample_data_generator""}",2025-07-13 20:09:57.915074
+28,clock_out,,Employee clocked out,"{""timestamp"": ""2025-07-13T13:09:57.927757"", ""source"": ""sample_data_generator""}",2025-07-13 20:09:57.928436
+29,error,,Camera connection lost,"{""timestamp"": ""2025-07-13T13:09:57.935390"", ""source"": ""sample_data_generator""}",2025-07-13 20:09:57.935976
+30,system_shutdown,,System shutdown initiated,"{""timestamp"": ""2025-07-13T13:09:57.943333"", ""source"": ""sample_data_generator""}",2025-07-13 20:09:57.943928
+31,clock_in,9.0,Demo User clocked in,"{""timestamp"": ""2025-07-13T23:31:02.607214"", ""time_log_id"": 60}",2025-07-14 06:31:02.641811
+32,clock_in,9.0,Demo User clocked in,"{""timestamp"": ""2025-07-13T23:31:20.141544"", ""time_log_id"": 61}",2025-07-14 06:31:20.161246
+33,clock_in,9.0,Demo User clocked in,"{""timestamp"": ""2025-07-13T23:32:09.320148"", ""time_log_id"": 62}",2025-07-14 06:32:09.336122
+34,clock_in,9.0,Demo User clocked in,"{""timestamp"": ""2025-07-14T08:18:56.367695"", ""time_log_id"": 63}",2025-07-14 15:18:56.391564
+35,clock_in,9.0,Demo User clocked in,"{""timestamp"": ""2025-07-14T08:19:07.909363"", ""time_log_id"": 64}",2025-07-14 15:19:07.938238
+36,clock_in,9.0,Demo User clocked in,"{""timestamp"": ""2025-07-14T08:19:38.936166"", ""time_log_id"": 65}",2025-07-14 15:19:38.952542
+37,clock_in,9.0,Demo User clocked in,"{""timestamp"": ""2025-07-14T08:19:49.528944"", ""time_log_id"": 66}",2025-07-14 15:19:49.549505
+38,clock_in,9.0,Demo User clocked in,"{""timestamp"": ""2025-07-14T08:21:50.197553"", ""time_log_id"": 67}",2025-07-14 15:21:50.217590
+39,clock_in,9.0,Arnav Mehta clocked in,"{""timestamp"": ""2025-07-14T08:41:01.172719"", ""time_log_id"": 68}",2025-07-14 15:41:01.189984
+40,clock_in,9.0,Arnav Mehta clocked in,"{""timestamp"": ""2025-07-14T08:41:12.361132"", ""time_log_id"": 69}",2025-07-14 15:41:12.385277
+41,clock_in,9.0,Arnav Mehta clocked in,"{""timestamp"": ""2025-07-14T08:41:25.079133"", ""time_log_id"": 70}",2025-07-14 15:41:25.095688
+42,clock_in,9.0,Arnav Mehta clocked in,"{""timestamp"": ""2025-07-14T08:42:12.147969"", ""time_log_id"": 71}",2025-07-14 15:42:12.200922
+43,clock_in,9.0,Arnav Mehta clocked in,"{""timestamp"": ""2025-07-15T10:15:35.815651"", ""time_log_id"": 36}",2025-07-15 17:15:35.837077
+44,clock_out,9.0,Arnav Mehta clocked out,"{""timestamp"": ""2025-07-15T10:17:04.543387"", ""time_log_id"": 36, ""duration_hours"": ""0.02""}",2025-07-15 17:17:04.561422
+45,clock_in,9.0,Arnav Mehta clocked in,"{""timestamp"": ""2025-07-15T10:19:45.430929"", ""time_log_id"": 36}",2025-07-15 17:19:45.452260
+46,clock_out,9.0,Arnav Mehta clocked out,"{""timestamp"": ""2025-07-15T10:19:46.605902"", ""time_log_id"": 36, ""duration_hours"": ""0.00""}",2025-07-15 17:19:46.629674
+47,clock_in,9.0,Arnav Mehta clocked in,"{""timestamp"": ""2025-07-15T10:34:52.358479"", ""time_log_id"": 36}",2025-07-15 17:34:52.402290
+48,clock_out,9.0,Arnav Mehta clocked out,"{""timestamp"": ""2025-07-15T10:34:53.764597"", ""time_log_id"": 36, ""duration_hours"": ""0.00""}",2025-07-15 17:34:53.796851
+49,clock_in,9.0,Arnav Mehta clocked in,"{""timestamp"": ""2025-07-15T10:39:09.704379"", ""time_log_id"": 36}",2025-07-15 17:39:09.751088
+50,clock_out,9.0,Arnav Mehta clocked out,"{""timestamp"": ""2025-07-15T10:39:37.031856"", ""time_log_id"": 36, ""duration_hours"": ""0.01""}",2025-07-15 17:39:37.058983
+51,system_startup,,Database setup completed successfully,"{""config_env"": ""default"", ""database_url"": ""sqlite:///stes.db"", ""timestamp"": ""2025-07-31T11:41:27.947009""}",2025-07-31 18:41:27.951765

@@ -50,12 +50,19 @@ STES/
    pip install -r requirements.txt
    ```
 
-3. **Set up the database:**
+3. **Install face_recognition and dependencies:**
+   ```bash
+   pip install cmake
+   pip install dlib
+   pip install face_recognition
+   ```
+
+4. **Set up the database:**
    ```bash
    python db/setup_database.py
    ```
 
-4. **Configure the application:**
+5. **Configure the application:**
    - Copy `.env.example` to `.env`
    - Update configuration values as needed
 
@@ -73,6 +80,62 @@ STES/
 
 3. **Access the web interface:**
    Open your browser and navigate to `http://localhost:8501`
+
+## 🛠️ Troubleshooting
+
+### ModuleNotFoundError: No module named 'face_recognition'
+
+If you see this error, the `face_recognition` library is not installed. Install it and its dependencies with:
+
+```bash
+pip install face_recognition
+```
+
+If you encounter issues installing `face_recognition`, you may need to install `cmake`, `dlib`, and build tools:
+
+- On Windows:
+  ```bash
+  pip install cmake
+  pip install dlib
+  pip install face_recognition
+  ```
+  You may also need to install Visual C++ Build Tools from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+
+- On Linux:
+  ```bash
+  sudo apt-get install build-essential cmake
+  pip install dlib
+  pip install face_recognition
+  ```
+
+For more help, see the [face_recognition installation guide](https://github.com/ageitgey/face_recognition#installation).
+
+### dlib build fails with "CMake is not installed on your system!"
+
+If you see an error like:
+
+```
+CMake is not installed on your system!
+...
+```
+
+This means the official CMake is not installed or not on your system PATH.  
+**Solution:**
+1. Download and install the official CMake from [cmake.org](https://cmake.org/download/).
+2. During installation, make sure to check the box to **Add CMake to the system PATH**.
+3. After installation, open a new terminal and run:
+   ```bash
+   cmake --version
+   ```
+   If you see the version, CMake is installed correctly.
+
+Now retry:
+```bash
+pip install dlib
+pip install face_recognition
+```
+
+If you still have issues, ensure you have Visual C++ Build Tools installed (see above).
 
 ## ⚙️ Configuration
 
@@ -139,4 +202,4 @@ This project demonstrates proficiency in:
 
 ---
 
-**Built with ❤️ during Nsight Inc. Internship** 
+**Built with ❤️ during Nsight Inc. Internship**
