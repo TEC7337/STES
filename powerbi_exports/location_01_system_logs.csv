@@ -1,0 +1,32 @@
+id,event_type,employee_id,message,details,timestamp,location_id,location_name,export_timestamp
+83,employee_registered,10.0,New employee Sarah Chen registered successfully,"{""timestamp"": ""2025-08-04T11:57:38.933332"", ""department"": ""Marketing"", ""source"": ""new_employee_script""}",2025-08-04 18:57:38.934146,1,Main Office,2025-08-06T10:22:21.152541
+84,clock_in,10.0,Sarah Chen clocked in,"{""timestamp"": ""2025-08-04T11:57:38.941219"", ""source"": ""new_employee_script""}",2025-08-04 18:57:38.941496,1,Main Office,2025-08-06T10:22:21.152541
+85,clock_out,10.0,Sarah Chen clocked out,"{""timestamp"": ""2025-08-04T11:57:38.948538"", ""source"": ""new_employee_script""}",2025-08-04 18:57:38.948810,1,Main Office,2025-08-06T10:22:21.152541
+86,clock_in,10.0,Sarah Chen clocked in,"{""timestamp"": ""2025-08-04T11:57:38.955654"", ""source"": ""new_employee_script""}",2025-08-04 18:57:38.955939,1,Main Office,2025-08-06T10:22:21.152541
+87,clock_out,10.0,Sarah Chen clocked out,"{""timestamp"": ""2025-08-04T11:57:38.962855"", ""source"": ""new_employee_script""}",2025-08-04 18:57:38.963139,1,Main Office,2025-08-06T10:22:21.152541
+88,clock_in,10.0,Sarah Chen clocked in,"{""timestamp"": ""2025-08-04T11:57:38.970184"", ""source"": ""new_employee_script""}",2025-08-04 18:57:38.970439,1,Main Office,2025-08-06T10:22:21.152541
+89,clock_out,10.0,Sarah Chen clocked out,"{""timestamp"": ""2025-08-04T11:57:38.977495"", ""source"": ""new_employee_script""}",2025-08-04 18:57:38.977821,1,Main Office,2025-08-06T10:22:21.152541
+90,clock_in,10.0,Sarah Chen clocked in,"{""timestamp"": ""2025-08-04T11:57:38.984717"", ""source"": ""new_employee_script""}",2025-08-04 18:57:38.984964,1,Main Office,2025-08-06T10:22:21.152541
+91,clock_out,10.0,Sarah Chen clocked out,"{""timestamp"": ""2025-08-04T11:57:38.991840"", ""source"": ""new_employee_script""}",2025-08-04 18:57:38.992124,1,Main Office,2025-08-06T10:22:21.152541
+92,clock_in,10.0,Sarah Chen clocked in,"{""timestamp"": ""2025-08-04T11:57:38.999340"", ""source"": ""new_employee_script""}",2025-08-04 18:57:38.999608,1,Main Office,2025-08-06T10:22:21.152541
+93,clock_out,10.0,Sarah Chen clocked out,"{""timestamp"": ""2025-08-04T11:57:39.006523"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.006793,1,Main Office,2025-08-06T10:22:21.152541
+94,clock_in,10.0,Sarah Chen clocked in,"{""timestamp"": ""2025-08-04T11:57:39.014128"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.014408,1,Main Office,2025-08-06T10:22:21.152541
+95,clock_out,10.0,Sarah Chen clocked out,"{""timestamp"": ""2025-08-04T11:57:39.021261"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.021581,1,Main Office,2025-08-06T10:22:21.152541
+129,employee_registered,14.0,New employee Emily Davis registered successfully,"{""timestamp"": ""2025-08-04T11:57:39.273187"", ""department"": ""Marketing"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.273474,1,Main Office,2025-08-06T10:22:21.152541
+130,clock_in,14.0,Emily Davis clocked in,"{""timestamp"": ""2025-08-04T11:57:39.280447"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.280709,1,Main Office,2025-08-06T10:22:21.152541
+131,clock_out,14.0,Emily Davis clocked out,"{""timestamp"": ""2025-08-04T11:57:39.287604"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.287973,1,Main Office,2025-08-06T10:22:21.152541
+132,clock_in,14.0,Emily Davis clocked in,"{""timestamp"": ""2025-08-04T11:57:39.295048"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.295332,1,Main Office,2025-08-06T10:22:21.152541
+133,clock_out,14.0,Emily Davis clocked out,"{""timestamp"": ""2025-08-04T11:57:39.302250"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.302514,1,Main Office,2025-08-06T10:22:21.152541
+134,clock_in,14.0,Emily Davis clocked in,"{""timestamp"": ""2025-08-04T11:57:39.309638"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.309925,1,Main Office,2025-08-06T10:22:21.152541
+135,clock_out,14.0,Emily Davis clocked out,"{""timestamp"": ""2025-08-04T11:57:39.317058"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.317329,1,Main Office,2025-08-06T10:22:21.152541
+162,employee_registered,17.0,New employee David Martinez registered successfully,"{""timestamp"": ""2025-08-04T11:57:39.512970"", ""department"": ""Marketing"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.513244,1,Main Office,2025-08-06T10:22:21.152541
+163,clock_in,17.0,David Martinez clocked in,"{""timestamp"": ""2025-08-04T11:57:39.520040"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.520281,1,Main Office,2025-08-06T10:22:21.152541
+164,clock_out,17.0,David Martinez clocked out,"{""timestamp"": ""2025-08-04T11:57:39.527064"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.527361,1,Main Office,2025-08-06T10:22:21.152541
+165,clock_in,17.0,David Martinez clocked in,"{""timestamp"": ""2025-08-04T11:57:39.534131"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.534389,1,Main Office,2025-08-06T10:22:21.152541
+166,clock_out,17.0,David Martinez clocked out,"{""timestamp"": ""2025-08-04T11:57:39.541376"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.541655,1,Main Office,2025-08-06T10:22:21.152541
+167,clock_in,17.0,David Martinez clocked in,"{""timestamp"": ""2025-08-04T11:57:39.548748"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.549023,1,Main Office,2025-08-06T10:22:21.152541
+168,clock_out,17.0,David Martinez clocked out,"{""timestamp"": ""2025-08-04T11:57:39.556708"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.557013,1,Main Office,2025-08-06T10:22:21.152541
+169,clock_in,17.0,David Martinez clocked in,"{""timestamp"": ""2025-08-04T11:57:39.564043"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.564339,1,Main Office,2025-08-06T10:22:21.152541
+170,clock_out,17.0,David Martinez clocked out,"{""timestamp"": ""2025-08-04T11:57:39.571343"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.571632,1,Main Office,2025-08-06T10:22:21.152541
+171,clock_in,17.0,David Martinez clocked in,"{""timestamp"": ""2025-08-04T11:57:39.578598"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.578923,1,Main Office,2025-08-06T10:22:21.152541
+172,clock_out,17.0,David Martinez clocked out,"{""timestamp"": ""2025-08-04T11:57:39.586094"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.586391,1,Main Office,2025-08-06T10:22:21.152541

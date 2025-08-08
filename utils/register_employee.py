@@ -12,15 +12,22 @@ import logging
 from datetime import datetime
 from typing import Optional, Tuple, List
 
-import face_recognition
+# Add the project root to the path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Try to import face_recognition, fall back to mock implementation
+try:
+    import face_recognition
+except ImportError:
+    # Import the mock implementation from face_recognition_utils
+    from utils.face_recognition_utils import MockFaceRecognition
+    face_recognition = MockFaceRecognition()
+
 import numpy as np
 import os
 from db.connection import get_database_manager
 from config.config import get_config
 from PIL import Image
-
-# Add the project root to the path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from db.connection import get_database_manager
 from utils.face_recognition_utils import FaceRecognitionManager
@@ -138,7 +145,8 @@ class EmployeeRegistrationManager:
     
     def register_employee_from_image(self, name: str, image_path: str, 
                                    email: Optional[str] = None, 
-                                   department: Optional[str] = None) -> bool:
+                                   department: Optional[str] = None,
+                                   location_id: int = 1) -> bool:
         """
         Register employee from image file
         
@@ -147,6 +155,7 @@ class EmployeeRegistrationManager:
             image_path (str): Path to employee image
             email (Optional[str]): Employee email
             department (Optional[str]): Employee department
+            location_id (int): Employee location ID (default: 1)
             
         Returns:
             bool: True if registration successful, False otherwise
@@ -175,13 +184,14 @@ class EmployeeRegistrationManager:
                 name=name,
                 face_encoding=face_encoding,
                 email=email,
-                department=department
+                department=department,
+                location_id=location_id
             )
             
             # Add face to the recognition manager
             self.face_manager.add_new_face(name, face_encoding)
             
-            logger.info(f"✅ Employee '{name}' registered successfully!")
+            logger.info(f"✅ Employee '{name}' registered successfully at location {location_id}!")
             
             # Log system event
             self.db_manager.log_system_event(
@@ -191,10 +201,20 @@ class EmployeeRegistrationManager:
                 details={
                     'email': email,
                     'department': department,
+                    'location_id': location_id,
                     'image_path': image_path,
                     'timestamp': datetime.now().isoformat()
                 }
             )
+            
+            # Update Power BI export files
+            try:
+                # Call the update function directly
+                update_powerbi_exports(location_id)
+                logger.info(f"✅ Power BI export files updated for {name}")
+            except Exception as e:
+                logger.error(f"❌ Failed to update Power BI exports for {name}: {e}")
+                # Don't fail the registration if Power BI update fails
             
             return True
             
@@ -204,7 +224,8 @@ class EmployeeRegistrationManager:
     
     def register_employee_with_camera(self, name: str, 
                                     email: Optional[str] = None, 
-                                    department: Optional[str] = None) -> bool:
+                                    department: Optional[str] = None,
+                                    location_id: int = 1) -> bool:
         """
         Register employee using camera capture
         
@@ -212,6 +233,7 @@ class EmployeeRegistrationManager:
             name (str): Employee name
             email (Optional[str]): Employee email
             department (Optional[str]): Employee department
+            location_id (int): Employee location ID (default: 1)
             
         Returns:
             bool: True if registration successful, False otherwise
@@ -225,7 +247,12 @@ class EmployeeRegistrationManager:
                 return False
             
             # Register employee using the captured image
-            return self.register_employee_from_image(name, image_path, email, department)
+            success = self.register_employee_from_image(name, image_path, email, department, location_id)
+            
+            # The update_powerbi_exports is already called in register_employee_from_image
+            # so we don't need to call it again here
+            
+            return success
             
         except Exception as e:
             logger.error(f"❌ Error registering employee with camera: {e}")
@@ -334,12 +361,209 @@ def register_employee_from_images(name, email, department, image_paths):
     return True
 
 
+def update_powerbi_exports(location_id=None):
+    """
+    Update Power BI export CSV files and SQL Server after employee registration
+    Only adds new employees without duplicating existing data
+    
+    Args:
+        location_id (int, optional): Location ID for the new employee. If None, uses the location from database.
+    """
+    try:
+        print("🔄 Updating Power BI export files and SQL Server...")
+        
+        # Start SQL Server sync if available
+        try:
+            from sql_server_integration import SQLServerIntegration
+            sql_server = SQLServerIntegration()
+            sql_server.sync_all_data()
+            print("🗄️ SQL Server sync completed")
+        except ImportError:
+            print("ℹ️ SQL Server integration not available")
+        except Exception as e:
+            print(f"⚠️ SQL Server sync failed: {e}")
+        
+        import pandas as pd
+        import sqlite3
+        from datetime import datetime
+        
+        # Location configurations
+        locations = [
+            {"id": 1, "name": "Main Office"},
+            {"id": 2, "name": "Branch Office"},
+            {"id": 3, "name": "West Coast Office"}
+        ]
+        
+        # Connect to database
+        conn = sqlite3.connect('stes.db')
+        
+        # Get all employees from database
+        all_employees = pd.read_sql_query("SELECT * FROM employees ORDER BY id", conn)
+        
+        if all_employees.empty:
+            print("❌ No employees found in database")
+            conn.close()
+            return
+        
+        print(f"📊 Found {len(all_employees)} employees in database")
+        print(f"📊 Latest employee: {all_employees.iloc[-1]['name']} (ID: {all_employees.iloc[-1]['id']})")
+        
+        # Ensure export directory exists
+        os.makedirs('powerbi_exports', exist_ok=True)
+        
+        # Check existing CSV file to see what's already exported
+        employees_file = 'powerbi_exports/all_locations_employees_fixed.csv'
+        existing_employee_ids = set()
+        
+        if os.path.exists(employees_file):
+            existing_csv = pd.read_csv(employees_file)
+            existing_employee_ids = set(existing_csv['original_id'].astype(int))
+            print(f"📊 Found {len(existing_employee_ids)} employees already in CSV")
+        
+        # Find new employees that need to be added
+        new_employees = []
+        for _, employee in all_employees.iterrows():
+            if employee['id'] not in existing_employee_ids:
+                # This is a new employee that needs to be added
+                if location_id is None:
+                    # Use the location from the database or default to Main Office
+                    emp_location_id = employee.get('location_id', 1)
+                else:
+                    # Use the provided location_id (for the latest employee)
+                    emp_location_id = location_id
+                
+                location_name = next(loc["name"] for loc in locations if loc["id"] == emp_location_id)
+                
+                # Create new employee record for export
+                new_employee = employee.copy()
+                new_employee['original_id'] = new_employee['id']
+                new_employee['id'] = new_employee['id'] + (emp_location_id - 1) * 1000
+                new_employee['location_id'] = emp_location_id
+                new_employee['location_name'] = location_name
+                new_employee['export_timestamp'] = datetime.now().isoformat()
+                
+                new_employees.append(new_employee)
+                print(f"➕ Found new employee: {employee['name']} (ID: {employee['id']})")
+        
+        if not new_employees:
+            print("✅ All employees are already in the CSV file")
+            conn.close()
+            return
+        
+        # Update employees CSV - add all new employees
+        if os.path.exists(employees_file):
+            # Read existing employees
+            existing_employees = pd.read_csv(employees_file)
+            
+            # Add new employees
+            new_employees_df = pd.DataFrame(new_employees)
+            updated_employees = pd.concat([existing_employees, new_employees_df], ignore_index=True)
+            
+            # Save updated file
+            updated_employees.to_csv(employees_file, index=False)
+            print(f"✅ Added {len(new_employees)} new employees to CSV")
+        else:
+            # Create new file with all employees
+            all_employees_export = []
+            for _, employee in all_employees.iterrows():
+                emp_location_id = employee.get('location_id', 1)
+                location_name = next(loc["name"] for loc in locations if loc["id"] == emp_location_id)
+                
+                export_employee = employee.copy()
+                export_employee['original_id'] = export_employee['id']
+                export_employee['id'] = export_employee['id'] + (emp_location_id - 1) * 1000
+                export_employee['location_id'] = emp_location_id
+                export_employee['location_name'] = location_name
+                export_employee['export_timestamp'] = datetime.now().isoformat()
+                
+                all_employees_export.append(export_employee)
+            
+            all_employees_df = pd.DataFrame(all_employees_export)
+            all_employees_df.to_csv(employees_file, index=False)
+            print(f"✅ Created new employees file with {len(all_employees)} employees")
+        
+        # Update time logs and system logs for new employees
+        for new_emp in new_employees:
+            emp_id = new_emp['original_id']
+            emp_location_id = new_emp['location_id']
+            location_name = new_emp['location_name']
+            
+            # Add time logs for this employee
+            time_logs_file = 'powerbi_exports/all_locations_time_logs_fixed.csv'
+            new_time_logs = pd.read_sql_query(
+                f"SELECT * FROM time_logs WHERE employee_id = {emp_id}", 
+                conn
+            )
+            
+            if not new_time_logs.empty:
+                for idx, time_log in new_time_logs.iterrows():
+                    time_log_copy = time_log.copy()
+                    time_log_copy['original_employee_id'] = time_log_copy['employee_id']
+                    time_log_copy['employee_id'] = time_log_copy['employee_id'] + (emp_location_id - 1) * 1000
+                    time_log_copy['location_id'] = emp_location_id
+                    time_log_copy['location_name'] = location_name
+                    time_log_copy['export_timestamp'] = datetime.now().isoformat()
+                    
+                    # Add to existing time logs file
+                    if os.path.exists(time_logs_file):
+                        existing_time_logs = pd.read_csv(time_logs_file)
+                        new_time_log_df = pd.DataFrame([time_log_copy])
+                        updated_time_logs = pd.concat([existing_time_logs, new_time_log_df], ignore_index=True)
+                        updated_time_logs.to_csv(time_logs_file, index=False)
+                    else:
+                        new_time_log_df = pd.DataFrame([time_log_copy])
+                        new_time_log_df.to_csv(time_logs_file, index=False)
+                
+                print(f"✅ Added {len(new_time_logs)} time logs for {new_emp['name']}")
+            
+            # Add system logs for this employee
+            system_logs_file = 'powerbi_exports/all_locations_system_logs_fixed.csv'
+            new_system_logs = pd.read_sql_query(
+                f"SELECT * FROM system_logs WHERE employee_id = {emp_id}", 
+                conn
+            )
+            
+            if not new_system_logs.empty:
+                for idx, system_log in new_system_logs.iterrows():
+                    system_log_copy = system_log.copy()
+                    system_log_copy['original_employee_id'] = system_log_copy['employee_id']
+                    system_log_copy['employee_id'] = system_log_copy['employee_id'] + (emp_location_id - 1) * 1000
+                    system_log_copy['location_id'] = emp_location_id
+                    system_log_copy['location_name'] = location_name
+                    system_log_copy['export_timestamp'] = datetime.now().isoformat()
+                    
+                    # Add to existing system logs file
+                    if os.path.exists(system_logs_file):
+                        existing_system_logs = pd.read_csv(system_logs_file)
+                        new_system_log_df = pd.DataFrame([system_log_copy])
+                        updated_system_logs = pd.concat([existing_system_logs, new_system_log_df], ignore_index=True)
+                        updated_system_logs.to_csv(system_logs_file, index=False)
+                    else:
+                        new_system_log_df = pd.DataFrame([system_log_copy])
+                        new_system_log_df.to_csv(system_logs_file, index=False)
+                
+                print(f"✅ Added {len(new_system_logs)} system logs for {new_emp['name']}")
+        
+        conn.close()
+        print(f"🎉 Power BI export files updated successfully! Added {len(new_employees)} new employees")
+        
+    except Exception as e:
+        print(f"❌ Error updating Power BI exports: {e}")
+
+
 def interactive_registration():
     """
     Interactive employee registration
     """
     print("🎯 Smart Time Entry System - Employee Registration")
     print("=" * 50)
+    
+    # Available locations
+    locations = {
+        1: "Main Office",
+        2: "Branch Office", 
+        3: "West Coast Office"
+    }
     
     registration_manager = EmployeeRegistrationManager()
     
@@ -359,10 +583,18 @@ def interactive_registration():
             email = input("Enter email (optional): ").strip() or None
             department = input("Enter department (optional): ").strip() or None
             
+            # Location selection
+            print("\n📍 Available Locations:")
+            for loc_id, loc_name in locations.items():
+                print(f"  {loc_id}. {loc_name}")
+            
+            location_input = input("Enter location ID (1-3, default 1): ").strip()
+            location_id = int(location_input) if location_input.isdigit() and int(location_input) in locations else 1
+            
             if name:
-                success = registration_manager.register_employee_with_camera(name, email, department)
+                success = registration_manager.register_employee_with_camera(name, email, department, location_id)
                 if success:
-                    print(f"✅ Employee '{name}' registered successfully!")
+                    print(f"✅ Employee '{name}' registered successfully at {locations[location_id]}!")
                 else:
                     print(f"❌ Failed to register employee '{name}'")
             else:
@@ -375,10 +607,18 @@ def interactive_registration():
             email = input("Enter email (optional): ").strip() or None
             department = input("Enter department (optional): ").strip() or None
             
+            # Location selection
+            print("\n📍 Available Locations:")
+            for loc_id, loc_name in locations.items():
+                print(f"  {loc_id}. {loc_name}")
+            
+            location_input = input("Enter location ID (1-3, default 1): ").strip()
+            location_id = int(location_input) if location_input.isdigit() and int(location_input) in locations else 1
+            
             if name and image_path:
-                success = registration_manager.register_employee_from_image(name, image_path, email, department)
+                success = registration_manager.register_employee_from_image(name, image_path, email, department, location_id)
                 if success:
-                    print(f"✅ Employee '{name}' registered successfully!")
+                    print(f"✅ Employee '{name}' registered successfully at {locations[location_id]}!")
                 else:
                     print(f"❌ Failed to register employee '{name}'")
             else:
@@ -411,6 +651,12 @@ def interactive_registration():
         
         elif choice == '5':
             print("👋 Goodbye!")
+            # Run Power BI update before exiting
+            try:
+                update_powerbi_exports()
+                print("✅ Power BI export files updated automatically")
+            except Exception as e:
+                print(f"❌ Power BI update failed: {e}")
             break
         
         else:
@@ -428,6 +674,8 @@ def main():
     parser.add_argument('--image', type=str, help='Path to employee image')
     parser.add_argument('--email', type=str, help='Employee email')
     parser.add_argument('--department', type=str, help='Employee department')
+    parser.add_argument('--location', type=int, choices=[1, 2, 3], default=1,
+                       help='Employee location ID (1=Main Office, 2=Branch Office, 3=West Coast Office)')
     parser.add_argument('--camera', action='store_true', 
                        help='Use camera to capture face')
     parser.add_argument('--list', action='store_true', 
@@ -435,6 +683,18 @@ def main():
     parser.add_argument('--remove', type=str, help='Remove employee by name')
     
     args = parser.parse_args()
+    
+    # Always run Power BI update at the end, regardless of what happened
+    def run_powerbi_update():
+        try:
+            update_powerbi_exports()
+            print("✅ Power BI export files updated automatically")
+        except Exception as e:
+            print(f"❌ Power BI update failed: {e}")
+    
+    # Register the cleanup function to run at exit
+    import atexit
+    atexit.register(run_powerbi_update)
     
     try:
         if args.interactive:
@@ -462,18 +722,19 @@ def main():
             elif args.name:
                 if args.camera:
                     success = registration_manager.register_employee_with_camera(
-                        args.name, args.email, args.department
+                        args.name, args.email, args.department, args.location
                     )
                 elif args.image:
                     success = registration_manager.register_employee_from_image(
-                        args.name, args.image, args.email, args.department
+                        args.name, args.image, args.email, args.department, args.location
                     )
                 else:
                     print("❌ Either --camera or --image must be specified")
                     sys.exit(1)
                 
                 if success:
-                    print(f"✅ Employee '{args.name}' registered successfully!")
+                    locations = {1: "Main Office", 2: "Branch Office", 3: "West Coast Office"}
+                    print(f"✅ Employee '{args.name}' registered successfully at {locations[args.location]}!")
                 else:
                     print(f"❌ Failed to register employee '{args.name}'")
             
@@ -486,6 +747,13 @@ def main():
     except Exception as e:
         logger.error(f"❌ Registration failed: {e}")
         sys.exit(1)
+    
+    # Always run Power BI update at the end
+    try:
+        update_powerbi_exports()
+        print("✅ Power BI export files updated automatically")
+    except Exception as e:
+        print(f"❌ Power BI update failed: {e}")
 
 
 if __name__ == '__main__':

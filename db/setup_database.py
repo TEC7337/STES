@@ -56,6 +56,14 @@ def setup_database(config_env='default'):
             }
         )
         
+        # Update Power BI export files if sample data was created
+        try:
+            from utils.register_employee import update_powerbi_exports
+            update_powerbi_exports()  # For setup, use default location assignment
+            logger.info("✅ Power BI export files updated successfully!")
+        except Exception as e:
+            logger.error(f"❌ Error updating Power BI exports: {e}")
+        
         logger.info("🎉 Database setup completed successfully!")
         
     except Exception as e:

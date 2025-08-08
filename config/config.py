@@ -9,6 +9,11 @@ from datetime import timedelta
 class Config:
     """Main configuration class for STES"""
     
+    # Multi-Location Configuration
+    LOCATION_ID = int(os.getenv('LOCATION_ID', '1'))  # Unique ID for each location
+    LOCATION_NAME = os.getenv('LOCATION_NAME', 'Main Office')  # Human-readable name
+    LOCATION_TIMEZONE = os.getenv('LOCATION_TIMEZONE', 'America/New_York')  # Timezone for this location
+    
     # Database Configuration
     DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///stes.db')
     DATABASE_TYPE = os.getenv('DATABASE_TYPE', 'sqlite')  # 'sqlite' or 'postgresql'

@@ -22,6 +22,7 @@ class Employee(Base):
     name = Column(String(100), nullable=False, unique=True)
     email = Column(String(100), unique=True)
     department = Column(String(50))
+    location_id = Column(Integer, default=1)  # Default to location 1 (Main Office)
     face_encoding = Column(Text, nullable=False)  # JSON string of face encoding array
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)

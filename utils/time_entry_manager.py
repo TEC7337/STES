@@ -221,6 +221,9 @@ class TimeEntryManager:
             # Update statistics
             self.stats['successful_clock_ins'] += 1
             
+            # Power BI updates handled by real-time updater
+            logger.info("🔄 Power BI update triggered via real-time monitoring")
+            
             logger.info(f"✅ Clock-in successful: {employee_name} at {now.strftime('%H:%M:%S')}")
             
             return {
@@ -288,6 +291,9 @@ class TimeEntryManager:
             
             # Update statistics
             self.stats['successful_clock_outs'] += 1
+            
+            # Power BI updates handled by real-time updater
+            logger.info("🔄 Power BI update triggered via real-time monitoring")
             
             logger.info(f"✅ Clock-out successful: {employee_name} at {now.strftime('%H:%M:%S')}")
             
@@ -512,6 +518,18 @@ class TimeEntryService:
             self.is_running = True
             logger.info("🚀 Time Entry Service started")
             
+            # Start SQL Server sync if available
+            try:
+                from sql_server_integration import SQLServerIntegration
+                if not hasattr(self, 'sql_server_integration'):
+                    self.sql_server_integration = SQLServerIntegration()
+                self.sql_server_integration.start_sync()
+                logger.info("🗄️ SQL Server sync started with service")
+            except ImportError:
+                logger.info("ℹ️ SQL Server integration not available")
+            except Exception as e:
+                logger.warning(f"⚠️ SQL Server sync failed to start: {e}")
+            
         except Exception as e:
             logger.error(f"❌ Error starting service: {e}")
             raise
@@ -523,6 +541,14 @@ class TimeEntryService:
             
             if self.processing_thread and self.processing_thread.is_alive():
                 self.processing_thread.join(timeout=5)
+            
+            # Stop SQL Server sync if available
+            try:
+                if hasattr(self, 'sql_server_integration'):
+                    self.sql_server_integration.stop_sync()
+                    logger.info("🗄️ SQL Server sync stopped with service")
+            except Exception as e:
+                logger.warning(f"⚠️ SQL Server sync failed to stop: {e}")
             
             logger.info("⏹️ Time Entry Service stopped")
             

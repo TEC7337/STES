@@ -14,7 +14,13 @@ import time
 import threading
 import logging
 from typing import Optional, Dict, List
-import face_recognition
+# Try to import face_recognition, fall back to mock implementation
+try:
+    import face_recognition
+except ImportError:
+    # Import the mock implementation from face_recognition_utils
+    from utils.face_recognition_utils import MockFaceRecognition
+    face_recognition = MockFaceRecognition()
 
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -23,6 +29,15 @@ from config.config import get_config
 from utils.time_entry_manager import TimeEntryService
 from utils.face_recognition_utils import VideoCapture
 from db.connection import get_database_manager
+
+# Import Power BI updater
+try:
+    from real_time_powerbi_updater import RealTimePowerBIUpdater
+    POWERBI_AVAILABLE = True
+except ImportError:
+    POWERBI_AVAILABLE = False
+
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -92,6 +107,12 @@ st.markdown("""
 # Initialize session state
 if 'service' not in st.session_state:
     st.session_state.service = None
+
+# Initialize Power BI updater
+if POWERBI_AVAILABLE and 'powerbi_updater' not in st.session_state:
+    st.session_state.powerbi_updater = RealTimePowerBIUpdater()
+
+
 if 'is_running' not in st.session_state:
     st.session_state.is_running = False
 if 'video_capture' not in st.session_state:
@@ -128,6 +149,13 @@ def start_system():
             st.session_state.service.start_service()
             st.session_state.video_capture.start_capture()
             st.session_state.is_running = True
+            
+            # Start Power BI monitoring if available (silent)
+            if POWERBI_AVAILABLE and st.session_state.powerbi_updater:
+                st.session_state.powerbi_updater.start_monitoring()
+            
+
+            
             st.success("🚀 System started successfully!")
             logger.info("STES system started")
         else:
@@ -145,6 +173,12 @@ def stop_system():
         
         if st.session_state.video_capture:
             st.session_state.video_capture.stop_capture()
+        
+        # Stop Power BI monitoring if available (silent)
+        if POWERBI_AVAILABLE and st.session_state.powerbi_updater:
+            st.session_state.powerbi_updater.stop_monitoring()
+        
+
         
         st.session_state.is_running = False
         st.success("⏹️ System stopped successfully!")
@@ -641,6 +675,10 @@ def display_sidebar():
     st.sidebar.write(f"**Cooldown Period:** {config.COOLDOWN_MINUTES} minutes")
     st.sidebar.write(f"**Recognition Tolerance:** {config.FACE_RECOGNITION_TOLERANCE}")
     st.sidebar.write(f"**Detection Model:** {config.FACE_DETECTION_MODEL}")
+    
+
+    
+
 
 # --- Patch for daily summary: ensure it always shows latest logs ---
 def display_daily_summary():

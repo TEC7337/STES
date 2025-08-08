@@ -1,0 +1,4 @@
+location_id,location_name,employee_count,export_file
+1,Main Office,9,location_01_employees.csv
+2,Branch Office,2,location_02_employees.csv
+3,West Coast Office,7,location_03_employees.csv

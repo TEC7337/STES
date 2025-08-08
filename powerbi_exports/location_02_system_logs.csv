@@ -1,0 +1,14 @@
+id,event_type,employee_id,message,details,timestamp,location_id,location_name,export_timestamp
+149,employee_registered,16.0,New employee Jennifer Lee registered successfully,"{""timestamp"": ""2025-08-04T11:57:39.417458"", ""department"": ""Engineering"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.417700,2,Branch Office,2025-08-06T10:22:21.159419
+150,clock_in,16.0,Jennifer Lee clocked in,"{""timestamp"": ""2025-08-04T11:57:39.424553"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.424864,2,Branch Office,2025-08-06T10:22:21.159419
+151,clock_out,16.0,Jennifer Lee clocked out,"{""timestamp"": ""2025-08-04T11:57:39.431781"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.432133,2,Branch Office,2025-08-06T10:22:21.159419
+152,clock_in,16.0,Jennifer Lee clocked in,"{""timestamp"": ""2025-08-04T11:57:39.438993"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.439256,2,Branch Office,2025-08-06T10:22:21.159419
+153,clock_out,16.0,Jennifer Lee clocked out,"{""timestamp"": ""2025-08-04T11:57:39.446152"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.446503,2,Branch Office,2025-08-06T10:22:21.159419
+154,clock_in,16.0,Jennifer Lee clocked in,"{""timestamp"": ""2025-08-04T11:57:39.453552"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.453833,2,Branch Office,2025-08-06T10:22:21.159419
+155,clock_out,16.0,Jennifer Lee clocked out,"{""timestamp"": ""2025-08-04T11:57:39.460906"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.461245,2,Branch Office,2025-08-06T10:22:21.159419
+156,clock_in,16.0,Jennifer Lee clocked in,"{""timestamp"": ""2025-08-04T11:57:39.468572"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.468846,2,Branch Office,2025-08-06T10:22:21.159419
+157,clock_out,16.0,Jennifer Lee clocked out,"{""timestamp"": ""2025-08-04T11:57:39.475768"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.476085,2,Branch Office,2025-08-06T10:22:21.159419
+158,clock_in,16.0,Jennifer Lee clocked in,"{""timestamp"": ""2025-08-04T11:57:39.483018"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.483288,2,Branch Office,2025-08-06T10:22:21.159419
+159,clock_out,16.0,Jennifer Lee clocked out,"{""timestamp"": ""2025-08-04T11:57:39.490594"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.490873,2,Branch Office,2025-08-06T10:22:21.159419
+160,clock_in,16.0,Jennifer Lee clocked in,"{""timestamp"": ""2025-08-04T11:57:39.498187"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.498471,2,Branch Office,2025-08-06T10:22:21.159419
+161,clock_out,16.0,Jennifer Lee clocked out,"{""timestamp"": ""2025-08-04T11:57:39.505562"", ""source"": ""new_employee_script""}",2025-08-04 18:57:39.505833,2,Branch Office,2025-08-06T10:22:21.159419

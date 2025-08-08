@@ -139,30 +139,35 @@ def create_sample_employees():
             'name': 'Alice Johnson',
             'email': 'alice.johnson@nsight.com',
             'department': 'Engineering',
+            'location_id': 3,  # West Coast Office
             'seed': 1001
         },
         {
             'name': 'Bob Smith',
             'email': 'bob.smith@nsight.com',
             'department': 'Data Science',
+            'location_id': 2,  # Branch Office
             'seed': 1002
         },
         {
             'name': 'Carol Davis',
             'email': 'carol.davis@nsight.com',
             'department': 'Product Management',
+            'location_id': 1,  # Main Office
             'seed': 1003
         },
         {
             'name': 'David Wilson',
             'email': 'david.wilson@nsight.com',
             'department': 'Engineering',
+            'location_id': 1,  # Main Office
             'seed': 1004
         },
         {
             'name': 'Emma Brown',
             'email': 'emma.brown@nsight.com',
             'department': 'Marketing',
+            'location_id': 1,  # Main Office
             'seed': 1005
         }
     ]
@@ -205,7 +210,8 @@ def create_sample_employees():
                 name=emp_data['name'],
                 face_encoding=face_encoding,
                 email=emp_data['email'],
-                department=emp_data['department']
+                department=emp_data['department'],
+                location_id=emp_data.get('location_id', 1)  # Default to location 1
             )
             
             created_employees.append({
@@ -404,6 +410,15 @@ def main():
             logger.info("📝 Creating system logs...")
             create_system_logs()
             
+            # Update Power BI export files
+            logger.info("🔄 Updating Power BI export files...")
+            try:
+                from utils.register_employee import update_powerbi_exports
+                update_powerbi_exports()  # For sample data, use default location assignment
+                logger.info("✅ Power BI export files updated successfully!")
+            except Exception as e:
+                logger.error(f"❌ Error updating Power BI exports: {e}")
+            
             logger.info("🎉 Sample data generation completed successfully!")
             
             # Print summary
@@ -413,6 +428,7 @@ def main():
             print(f"👥 Employees created: {len(employees)}")
             print(f"📅 Time logs created: {len(time_logs)}")
             print(f"🎯 Face encodings file: {'✅ Created' if os.path.exists(get_config().FACE_ENCODINGS_PATH) else '❌ Failed'}")
+            print("✅ Power BI export files updated")
             print("="*50)
             
             print("\n🚀 Ready to run the STES system!")

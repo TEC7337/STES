@@ -1,0 +1,51 @@
+Power BI Sample Queries for STES
+========================================
+
+REAL TIME STATUS:
+SELECT 
+            e.id,
+            e.name,
+            e.department,
+            CASE 
+                WHEN tl.clock_out IS NULL AND tl.clock_in IS NOT NULL THEN 'Clocked In'
+                WHEN tl.clock_out IS NOT NULL THEN 'Clocked Out'
+                ELSE 'Not Present'
+            END as status,
+            tl.clock_in,
+            tl.clock_out,
+            tl.date
+        FROM employees e
+        LEFT JOIN time_logs tl ON e.id = tl.employee_id AND tl.date = DATE('now')
+        WHERE e.is_active = 1
+
+----------------------------------------
+
+DAILY ATTENDANCE:
+SELECT 
+            e.department,
+            COUNT(DISTINCT e.id) as total_employees,
+            COUNT(CASE WHEN tl.clock_in IS NOT NULL THEN 1 END) as clocked_in,
+            COUNT(CASE WHEN tl.clock_out IS NOT NULL THEN 1 END) as clocked_out,
+            ROUND((COUNT(CASE WHEN tl.clock_in IS NOT NULL THEN 1 END) * 100.0 / COUNT(DISTINCT e.id)), 2) as attendance_rate
+        FROM employees e
+        LEFT JOIN time_logs tl ON e.id = tl.employee_id AND tl.date = DATE('now')
+        WHERE e.is_active = 1
+        GROUP BY e.department
+
+----------------------------------------
+
+WORK HOURS:
+SELECT 
+            e.name,
+            e.department,
+            tl.date,
+            tl.clock_in,
+            tl.clock_out,
+            CAST((julianday(tl.clock_out) - julianday(tl.clock_in)) * 24 AS DECIMAL(4,2)) as hours_worked
+        FROM employees e
+        JOIN time_logs tl ON e.id = tl.employee_id
+        WHERE tl.clock_out IS NOT NULL
+        AND tl.date >= DATE('now', '-30 days')
+
+----------------------------------------
+

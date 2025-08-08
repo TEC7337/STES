@@ -80,7 +80,7 @@ class DatabaseManager:
         finally:
             session.close()
     
-    def create_employee(self, name, face_encoding, email=None, department=None):
+    def create_employee(self, name, face_encoding, email=None, department=None, location_id=1):
         """
         Create a new employee record
         
@@ -89,6 +89,7 @@ class DatabaseManager:
             face_encoding (numpy.ndarray): Face encoding array
             email (str, optional): Employee email
             department (str, optional): Employee department
+            location_id (int, optional): Employee location ID (default: 1)
             
         Returns:
             int: Created employee's ID
@@ -97,12 +98,13 @@ class DatabaseManager:
             employee = Employee(
                 name=name,
                 email=email,
-                department=department
+                department=department,
+                location_id=location_id
             )
             employee.set_face_encoding(face_encoding)
             session.add(employee)
             session.flush()  # Get the ID without committing
-            logger.info(f"✅ Employee created: {name} (ID: {employee.id})")
+            logger.info(f"✅ Employee created: {name} (ID: {employee.id}, Location: {location_id})")
             return employee.id
     
     def get_employee_by_name(self, name):
